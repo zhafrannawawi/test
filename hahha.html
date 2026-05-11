@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Undangan Makan!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fff5f5;
+            overflow: hidden;
+            touch-action: manipulation; /* Optimasi sentuhan mobile */
+        }
+        .transition-all {
+            transition: all 0.2s ease-out;
+        }
+        #btn-no {
+            z-index: 50;
+        }
+        #btn-yes {
+            z-index: 40;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div id="main-card" class="bg-white p-8 rounded-3xl shadow-2xl text-center max-w-sm w-full mx-4 transition-all relative">
+        <div id="image-container" class="text-6xl mb-6">🍔</div>
+
+        <h1 id="question" class="text-2xl font-extrabold text-gray-800 mb-2">Makan bareng yuk?</h1>
+        <p id="sub-text" class="text-gray-500 mb-8">Gak terima penolakan ya!</p>
+
+        <div id="button-container" class="flex flex-col items-center justify-center gap-4 min-h-[150px]">
+            <button id="btn-yes" class="bg-green-500 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-all transform active:scale-90 w-full max-w-[200px]">
+                Iya
+            </button>
+            
+            <button id="btn-no" class="bg-red-500 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-all transform active:scale-90 w-full max-w-[200px]">
+                Tidak
+            </button>
+        </div>
+    </div>
+
+    <!-- Screen Sukses -->
+    <div id="success-screen" class="hidden fixed inset-0 bg-white flex flex-col items-center justify-center text-center p-6 z-[100]">
+        <div class="text-8xl mb-6">🎉</div>
+        <h1 class="text-3xl font-black text-gray-800 mb-4">Yeay! I knew it!</h1>
+        <p class="text-lg text-gray-600 font-medium">Chat aku sekarang ya!</p>
+    </div>
+
+    <script>
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const successScreen = document.getElementById('success-screen');
+
+        let yesScale = 1;
+        let noClicks = 0;
+
+        const messages = ["Yakin?", "Eits!", "Gak kena!", "Ayo klik Iya!", "Susah kan?"];
+
+        function moveButton() {
+            // Hitung padding agar tidak terlalu ke pinggir layar
+            const padding = 20;
+            const maxX = window.innerWidth - btnNo.offsetWidth - padding;
+            const maxY = window.innerHeight - btnNo.offsetHeight - padding;
+            
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = `${randomX}px`;
+            btnNo.style.top = `${randomY}px`;
+            btnNo.style.width = 'auto'; // Biar ukurannya menyesuaikan teks
+        }
+
+        // Handle Klik/Tap
+        btnNo.addEventListener('click', (e) => {
+            noClicks++;
+            
+            // Perbesar tombol Iya
+            yesScale += 0.4;
+            btnYes.style.transform = `scale(${yesScale})`;
+
+            if (noClicks <= messages.length) {
+                btnNo.innerText = messages[noClicks - 1];
+            }
+
+            if (noClicks >= 3) {
+                moveButton();
+            }
+        });
+
+        // Khusus Mobile: Lari saat disentuh (sebelum klik selesai)
+        btnNo.addEventListener('touchstart', (e) => {
+            if (noClicks >= 3) {
+                e.preventDefault(); // Mencegah klik beneran
+                moveButton();
+                
+                // Tetap besarkan tombol Iya meskipun cuma disentuh
+                yesScale += 0.2;
+                btnYes.style.transform = `scale(${yesScale})`;
+            }
+        });
+
+        // Desktop: Lari saat didekati mouse
+        btnNo.addEventListener('mouseover', () => {
+            if (noClicks >= 3 && window.innerWidth > 768) {
+                moveButton();
+            }
+        });
+
+        btnYes.addEventListener('click', () => {
+            successScreen.classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>
